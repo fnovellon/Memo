@@ -20,6 +20,14 @@ describe('lecture d’une sauvegarde', () => {
     expect(backup.settings).toEqual(DEFAULT_SETTINGS);
   });
 
+  it('conserve la version de l’application quand elle est présente', () => {
+    expect(parseBackup(JSON.stringify({ ...VALID, appVersion: '0.2.0' })).appVersion).toBe('0.2.0');
+  });
+
+  it('accepte une sauvegarde antérieure, sans version d’application', () => {
+    expect(parseBackup(JSON.stringify(VALID)).appVersion).toBeUndefined();
+  });
+
   it('refuse un JSON invalide', () => {
     expect(() => parseBackup('{')).toThrow(BackupError);
   });

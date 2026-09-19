@@ -44,6 +44,13 @@ npm run preview    # sert le build
 
 Les icônes PWA sont générées sans dépendance externe : `node scripts/generate-icons.mjs`.
 
+## Version
+
+Les réglages affichent la version de l'application suivie du commit qui l'a produite
+(`Memo 0.2.0 · 50f06aa`), injectés au build depuis `package.json` et depuis git —
+`GITHUB_SHA` dans une action, `git rev-parse` en local. On sait ainsi exactement ce
+qui tourne dans le navigateur. Chaque sauvegarde exportée porte la même version.
+
 ## Déploiement
 
 Chaque push sur `main` déclenche le workflow [`deploy.yml`](.github/workflows/deploy.yml) :

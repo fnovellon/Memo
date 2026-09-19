@@ -5,7 +5,10 @@ export const BACKUP_VERSION = 1;
 
 export interface Backup {
   format: typeof BACKUP_FORMAT;
+  /** Version du format de sauvegarde, pas celle de l'application. */
   version: number;
+  /** Version de l'application ayant produit le fichier, utile au diagnostic. */
+  appVersion?: string;
   exportedAt: number;
   words: Word[];
   cards: Card[];
@@ -57,6 +60,7 @@ export function parseBackup(raw: string): Backup {
   return {
     format: BACKUP_FORMAT,
     version: candidate.version,
+    ...(typeof candidate.appVersion === 'string' ? { appVersion: candidate.appVersion } : {}),
     exportedAt: typeof candidate.exportedAt === 'number' ? candidate.exportedAt : Date.now(),
     words: candidate.words as unknown as Word[],
     cards: candidate.cards as unknown as Card[],

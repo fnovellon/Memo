@@ -1,5 +1,6 @@
 import { useRef, useState, type ChangeEvent } from 'react';
 import { useStore } from '../app/store';
+import { APP_BUILD } from '../app/version';
 import { createBackup, downloadBackup, restoreBackup } from '../data/backup';
 import { BackupError, parseBackup } from '../domain/backup';
 import type { Settings } from '../domain/types';
@@ -176,6 +177,8 @@ export default function SettingsPage() {
           La restauration remplace tout le contenu ; elle ne fusionne pas.
         </p>
       </section>
+
+      <p className="version">Memo {APP_BUILD}</p>
     </>
   );
 }
