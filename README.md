@@ -71,6 +71,12 @@ robustes sur Pages.
 
 Pour activer la publication la première fois : **Settings → Pages → Source : GitHub Actions**.
 
+Ce réglage n'est pas cosmétique. Laissé sur « Deploy from a branch », GitHub lance en
+parallèle son propre pipeline, qui ne sait pas compiler et publie les fichiers bruts du
+dépôt — donc un `index.html` appelant `/src/main.tsx`, que le navigateur ne peut pas
+exécuter. Les deux publications se déclenchent alors à chaque push et la dernière
+arrivée gagne, à quelques secondes près : le site fonctionne ou non selon le hasard.
+
 ## Structure
 
 ```
