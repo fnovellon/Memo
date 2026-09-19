@@ -2,7 +2,9 @@ name: Déploiement GitHub Pages
 
 on:
   push:
-    branches: [main]
+    # La branche de développement est publiée elle aussi tant que le projet n'est
+    # pas fusionné : elle peut être retirée d'ici une fois `main` à jour.
+    branches: [main, claude/wonderful-gauss-dkeo6p]
   workflow_dispatch:
 
 permissions:
