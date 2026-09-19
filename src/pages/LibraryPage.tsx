@@ -1,11 +1,14 @@
 import { useMemo, useState } from 'react';
 import { useStore } from '../app/store';
+import ImagePicker from '../components/ImagePicker';
+import { useWordImage } from '../app/useWordImage';
 import { LANGUAGES, getLanguage, needsReading } from '../domain/languages';
 import { describeNextDue } from '../domain/scheduler';
+import { suggestQuery, type ImageCandidate } from '../domain/images';
 import type { Word } from '../domain/types';
 
 export default function LibraryPage() {
-  const { words, cards, updateWord, deleteWord, setWordSuspended } = useStore();
+  const { words, cards, updateWord, deleteWord, setWordSuspended, hasImage } = useStore();
   const [query, setQuery] = useState('');
   const [lang, setLang] = useState('all');
   const [editing, setEditing] = useState<string | null>(null);
@@ -102,22 +105,27 @@ export default function LibraryPage() {
                   />
                 ) : (
                   <>
-                    <div className="word__head">
-                      <span className="word__term" lang={getLanguage(word.lang).htmlLang}>
-                        {word.term}
-                      </span>
-                      <span className="word__translation">{word.translation}</span>
-                    </div>
-                    <div className="word__meta">
-                      <span className="badge">{getLanguage(word.lang).label}</span>
-                      {word.reading && <span>{word.reading}</span>}
-                      <span>
-                        {suspended
-                          ? 'suspendu'
-                          : next
-                            ? `revu ${describeNextDue(next, Date.now())}`
-                            : 'jamais vu'}
-                      </span>
+                    <div className="word__row">
+                      {hasImage(word.id) && <Thumbnail wordId={word.id} />}
+                      <div className="word__body">
+                        <div className="word__head">
+                          <span className="word__term" lang={getLanguage(word.lang).htmlLang}>
+                            {word.term}
+                          </span>
+                          <span className="word__translation">{word.translation}</span>
+                        </div>
+                        <div className="word__meta">
+                          <span className="badge">{getLanguage(word.lang).label}</span>
+                          {word.reading && <span>{word.reading}</span>}
+                          <span>
+                            {suspended
+                              ? 'suspendu'
+                              : next
+                                ? `revu ${describeNextDue(next, Date.now())}`
+                                : 'jamais vu'}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                     <div className="word__actions">
                       <button className="btn btn--ghost" onClick={() => setEditing(word.id)}>
@@ -144,6 +152,12 @@ export default function LibraryPage() {
   );
 }
 
+function Thumbnail({ wordId }: { wordId: string }) {
+  const illustration = useWordImage(wordId);
+  if (!illustration) return null;
+  return <img className="word__thumb" src={illustration.url} alt="" />;
+}
+
 function WordEditor({
   word,
   onSave,
@@ -153,9 +167,23 @@ function WordEditor({
   onSave: (word: Word) => Promise<void>;
   onCancel: () => void;
 }) {
+  const { setWordImage, removeWordImage, hasImage } = useStore();
   const [term, setTerm] = useState(word.term);
   const [translation, setTranslation] = useState(word.translation);
   const [reading, setReading] = useState(word.reading ?? '');
+  const [picking, setPicking] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const illustration = useWordImage(word.id, hasImage(word.id));
+
+  async function pick(candidate: ImageCandidate) {
+    setPicking(false);
+    setImageError(null);
+    try {
+      await setWordImage(word.id, candidate);
+    } catch {
+      setImageError('L’image n’a pas pu être enregistrée.');
+    }
+  }
 
   return (
     <form
@@ -188,6 +216,37 @@ function WordEditor({
           required
         />
       </label>
+      {imageError && <p className="notice">{imageError}</p>}
+
+      <div className="image-field">
+        {illustration ? (
+          <>
+            <img src={illustration.url} alt="" />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="small muted">{illustration.image.attribution}</div>
+            </div>
+            <button className="btn btn--ghost" type="button" onClick={() => setPicking(true)}>
+              Changer
+            </button>
+            <button
+              className="btn btn--danger"
+              type="button"
+              onClick={() => void removeWordImage(word.id)}
+            >
+              Retirer
+            </button>
+          </>
+        ) : (
+          <button
+            className="btn btn--ghost btn--block"
+            type="button"
+            onClick={() => setPicking(true)}
+          >
+            Ajouter une image
+          </button>
+        )}
+      </div>
+
       <div className="row">
         <button className="btn btn--primary" type="submit">
           Enregistrer
@@ -196,6 +255,14 @@ function WordEditor({
           Annuler
         </button>
       </div>
+
+      {picking && (
+        <ImagePicker
+          initialQuery={suggestQuery(translation, term)}
+          onPick={(candidate) => void pick(candidate)}
+          onClose={() => setPicking(false)}
+        />
+      )}
     </form>
   );
 }

@@ -5,6 +5,7 @@ import { buildSessionPlan, requeue, sendToBack } from '../domain/session';
 import { describeNextDue, returnsInSession } from '../domain/scheduler';
 import { checkTypedAnswer, type AnswerVerdict } from '../domain/answerCheck';
 import { getLanguage } from '../domain/languages';
+import { useWordImage } from '../app/useWordImage';
 import type { Grade, Word } from '../domain/types';
 
 interface Tally {
@@ -50,6 +51,9 @@ export default function SessionPage() {
   const word = card ? wordsById.get(card.wordId) : undefined;
   const isRecognition = card?.direction === 'recognition';
   const expected = word ? (isRecognition ? word.translation : word.term) : '';
+  // Chargée dès que la carte change, affichée seulement à la révélation : pas de
+  // temps d'attente au moment où l'on retourne la carte.
+  const illustration = useWordImage(word?.id);
 
   const nextCard = useCallback(() => {
     setRevealed(false);
@@ -178,6 +182,14 @@ export default function SessionPage() {
               </span>
               {word.reading && <span className="flashcard__reading">{word.reading}</span>}
             </>
+          )}
+          {illustration && (
+            <figure className="card-image">
+              <img src={illustration.url} alt="" />
+              <figcaption className="card-image__credit">
+                {illustration.image.attribution}
+              </figcaption>
+            </figure>
           )}
           {lastOutcome && <span className="flashcard__hint">{lastOutcome}</span>}
         </div>

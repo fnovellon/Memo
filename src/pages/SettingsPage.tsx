@@ -1,7 +1,8 @@
-import { useRef, useState, type ChangeEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { useStore } from '../app/store';
 import { createBackup, downloadBackup, restoreBackup } from '../data/backup';
 import { BackupError, parseBackup } from '../domain/backup';
+import { imageStorageSummary } from '../data/repository';
 import type { Settings } from '../domain/types';
 
 const THEMES: { value: Settings['theme']; label: string }[] = [
@@ -11,10 +12,22 @@ const THEMES: { value: Settings['theme']; label: string }[] = [
 ];
 
 export default function SettingsPage() {
-  const { settings, updateSettings, words, cards, reload } = useStore();
+  const { settings, updateSettings, words, cards, reload, imagedWordIds } = useStore();
+  const [images, setImages] = useState({ count: 0, bytes: 0 });
   const [notice, setNotice] = useState<{ kind: 'ok' | 'warn'; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const summary = await imageStorageSummary();
+      if (!cancelled) setImages(summary);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [imagedWordIds]);
 
   async function handleExport() {
     setBusy(true);
@@ -175,9 +188,22 @@ export default function SettingsPage() {
           {lastExport ? `Dernier export le ${lastExport}.` : 'Aucun export pour le moment.'}{' '}
           La restauration remplace tout le contenu ; elle ne fusionne pas.
         </p>
+        <p className="notice" style={{ marginTop: 12, marginBottom: 0 }}>
+          {images.count > 0
+            ? `Les ${images.count} image${images.count > 1 ? 's' : ''} (${formatBytes(images.bytes)}) ne sont pas incluses dans l’export.`
+            : 'Les images ne sont pas incluses dans l’export.'}{' '}
+          Elles restent sur cet appareil et se rattachent à leurs mots après une
+          restauration ici, mais une restauration ailleurs les laissera de côté.
+        </p>
       </section>
     </>
   );
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} o`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} Ko`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
 }
 
 function clamp(value: number, min: number, max: number): number {

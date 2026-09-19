@@ -29,10 +29,25 @@ La langue source est le **français**. L'interface est en français.
 | Alimentation | formulaire d'ajout rapide + packs de vocabulaire pré-construits + recherche dictionnaire |
 | Sauvegarde | export/import JSON, avec rappel si l'export date trop |
 | Bonus retenus | statistiques et série de jours, mode écriture, thème clair/sombre |
+| Images | recherche Openverse, une image par mot, affichée au verso, hors sauvegarde |
 | Déploiement | GitHub Pages via GitHub Actions à chaque push |
 
 Écartés pour l'instant : phrases d'exemple, tags/thèmes, prononciation audio,
 traduction automatique par API, synchronisation multi-appareils.
+
+### Images
+
+Une image facultative par mot, cherchée dans **Openverse** (licences libres, pas de
+clé d'API, CORS ouvert — Unsplash et Pexels sont écartés car leur clé ne peut pas
+être cachée dans une page statique). Elle est téléchargée, réduite à 512 px et
+réencodée en WebP avant stockage, puis affichée **au verso** de la carte avec le
+crédit de son auteur.
+
+Les images ne sont **pas** incluses dans l'export JSON, par choix assumé. En
+contrepartie, une restauration ne les efface pas : elles sont rangées sous
+l'identifiant du mot, donc elles se rattachent d'elles-mêmes sur le même appareil,
+et seules les orphelines sont écartées. Une restauration sur un autre appareil
+ramène les mots sans leurs images, et l'écran de sauvegarde le dit.
 
 ## 3. Modèle de données
 
@@ -161,6 +176,15 @@ recherche est chargé à la demande, pas au démarrage.
 - **Jalon 3 — les packs.** Script de génération, écran Packs, pack anglais puis
   espagnol/italien/allemand puis chinois.
 - **Jalon 4 — la recherche dictionnaire** intégrée au formulaire d'ajout.
+
+### Réserve sur les images
+
+L'appel réel à Openverse n'a **pas** pu être vérifié : le réseau de l'environnement
+de développement bloque ce domaine. Tout le reste de la chaîne est testé contre une
+banque simulée — filtrage des résultats incomplets, téléchargement, réduction,
+stockage, affichage, crédits, messages d'erreur et limite de débit. Si l'API refuse
+les appels anonymes, seule la recherche est en cause : le reste fonctionne, et un
+import de fichier local serait le repli naturel.
 
 ### Décisions prises en cours de route
 

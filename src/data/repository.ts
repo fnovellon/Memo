@@ -12,7 +12,7 @@ import type {
   Settings,
   Word,
 } from '../domain/types';
-import { getDB } from './db';
+import { getDB, type StoredImage } from './db';
 
 const SETTINGS_KEY = 'app';
 const DIRECTIONS: Direction[] = ['recognition', 'production'];
@@ -96,11 +96,12 @@ export async function updateWord(word: Word): Promise<void> {
  */
 export async function deleteWord(wordId: string): Promise<void> {
   const db = await getDB();
-  const tx = db.transaction(['words', 'cards'], 'readwrite');
+  const tx = db.transaction(['words', 'cards', 'images'], 'readwrite');
   await tx.objectStore('words').delete(wordId);
   const cards = tx.objectStore('cards');
   const doomed = await cards.index('by-word').getAllKeys(wordId);
   for (const key of doomed) await cards.delete(key);
+  await tx.objectStore('images').delete(wordId);
   await tx.done;
 }
 
@@ -219,4 +220,56 @@ export async function replaceAll(snapshot: Snapshot): Promise<void> {
   await tx.objectStore('settings').put({ ...DEFAULT_SETTINGS, ...snapshot.settings, key: SETTINGS_KEY });
 
   await tx.done;
+
+  // Le magasin d'images est volontairement épargné : les images ne voyagent pas
+  // dans la sauvegarde, mais elles survivent à une restauration sur le même
+  // appareil puisqu'elles sont rangées sous l'identifiant du mot. Restent à
+  // écarter celles dont le mot a disparu.
+  await pruneOrphanImages();
+}
+
+export async function getImage(wordId: string): Promise<StoredImage | undefined> {
+  const db = await getDB();
+  return db.get('images', wordId);
+}
+
+export async function putImage(image: StoredImage): Promise<void> {
+  const db = await getDB();
+  await db.put('images', image);
+}
+
+export async function deleteImage(wordId: string): Promise<void> {
+  const db = await getDB();
+  await db.delete('images', wordId);
+}
+
+/** Identifiants des mots illustrés, pour signaler la présence d'une image sans charger les blobs. */
+export async function listImagedWordIds(): Promise<string[]> {
+  const db = await getDB();
+  return db.getAllKeys('images');
+}
+
+export async function imageStorageSummary(): Promise<{ count: number; bytes: number }> {
+  const db = await getDB();
+  const images = await db.getAll('images');
+  return {
+    count: images.length,
+    bytes: images.reduce((sum, image) => sum + image.blob.size, 0),
+  };
+}
+
+/** Supprime les images dont le mot n'existe plus. Retourne le nombre d'images écartées. */
+export async function pruneOrphanImages(): Promise<number> {
+  const db = await getDB();
+  const [imageKeys, wordKeys] = await Promise.all([
+    db.getAllKeys('images'),
+    db.getAllKeys('words'),
+  ]);
+  const alive = new Set(wordKeys);
+  const orphans = imageKeys.filter((key) => !alive.has(key));
+
+  const tx = db.transaction('images', 'readwrite');
+  for (const key of orphans) await tx.objectStore('images').delete(key);
+  await tx.done;
+  return orphans.length;
 }

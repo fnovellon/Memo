@@ -25,11 +25,21 @@ En option, le **mode écriture** demande de taper la réponse avant de la révé
 variante listée dans la traduction est acceptée, et une faute d'accent est signalée
 comme telle plutôt que comptée fausse.
 
+## Images
+
+Chaque mot peut porter une image, cherchée dans [Openverse](https://openverse.org)
+(licences libres, sans clé d'API). Elle est réduite à 512 px et réencodée en WebP
+avant d'être stockée localement — une photo de banque passe ainsi de plusieurs
+mégaoctets à quelques kilo-octets. Elle apparaît au verso de la carte, avec le nom
+de son auteur et sa licence.
+
 ## Sauvegarde
 
 Les données ne vivent que dans le navigateur. Les réglages permettent d'exporter toute
 la bibliothèque et sa progression dans un fichier JSON, et de la restaurer — la
-restauration remplace le contenu existant, elle ne fusionne pas. Passé dix mots, l'accueil
+restauration remplace le contenu existant, elle ne fusionne pas. Les images en sont
+exclues pour garder le fichier léger ; elles survivent malgré tout à une restauration
+sur le même appareil, étant rangées sous l'identifiant de leur mot. Passé dix mots, l'accueil
 rappelle qu'une sauvegarde est nécessaire si le dernier export date de plus de deux semaines.
 
 ## Développement
