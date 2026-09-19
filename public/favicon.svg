@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Memo">
+  <rect width="64" height="64" rx="14" fill="#5b5bd6" />
+  <rect x="15.4" y="12.8" width="29.4" height="26.9" rx="3.2" fill="#ffffff" opacity="0.45" />
+  <rect x="19.2" y="23" width="29.4" height="26.9" rx="3.2" fill="#ffffff" />
+  <rect x="23.7" y="33.3" width="20.5" height="2.6" rx="1.3" fill="#5b5bd6" opacity="0.35" />
+  <rect x="23.7" y="39" width="14.7" height="2.6" rx="1.3" fill="#5b5bd6" opacity="0.2" />
+</svg>

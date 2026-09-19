@@ -62,8 +62,9 @@ interface Card {
   ease: number;            // facteur de facilité SM-2, plancher 1.3
   repetitions: number;
   lapses: number;
-  step: number;            // index dans les paliers d'apprentissage
+  step: number;            // index du prochain palier d'apprentissage à appliquer
   suspended: boolean;
+  lastReviewedAt?: number; // sert à calculer le temps réellement écoulé (utile à FSRS)
 }
 
 interface ReviewLog {        // append-only, jamais modifié : c'est le socle FSRS
@@ -152,7 +153,7 @@ recherche est chargé à la demande, pas au démarrage.
 
 ## 7. Jalons
 
-- **Jalon 1 — le cœur utilisable.** Projet Vite/React/TS, IndexedDB, bibliothèque,
+- **Jalon 1 — le cœur utilisable. ✅ livré.** Projet Vite/React/TS, IndexedDB, bibliothèque,
   ajout rapide, séance SM-2 complète avec les trois boutons et les quotas, thème
   clair/sombre, PWA installable, déploiement GitHub Pages, tests de l'algorithme.
 - **Jalon 2 — filet et motivation.** Export/import JSON et rappel de sauvegarde,
