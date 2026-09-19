@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useStore } from '../app/store';
 import { buildSessionPlan, requeue, sendToBack } from '../domain/session';
 import { describeNextDue, returnsInSession } from '../domain/scheduler';
+import { checkTypedAnswer, type AnswerVerdict } from '../domain/answerCheck';
 import { getLanguage } from '../domain/languages';
 import type { Grade, Word } from '../domain/types';
 
@@ -11,10 +12,17 @@ interface Tally {
   unknown: number;
 }
 
+const VERDICT_LABEL: Record<AnswerVerdict, string> = {
+  exact: 'Exact',
+  close: 'Juste, à l’accent près',
+  wrong: 'Ce n’est pas ça',
+};
+
 export default function SessionPage() {
   const { cards, words, wordsById, cardsById, settings, counts, answer } = useStore();
   const [params] = useSearchParams();
   const lang = params.get('lang');
+  const typingMode = settings.typingMode;
 
   const scopedCards = useMemo(() => {
     if (!lang) return cards;
@@ -33,38 +41,53 @@ export default function SessionPage() {
   const [tally, setTally] = useState<Tally>({ known: 0, unknown: 0 });
   const [lastOutcome, setLastOutcome] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [typed, setTyped] = useState('');
+  const [verdict, setVerdict] = useState<AnswerVerdict | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const currentId = order[0];
   const card = currentId ? cardsById.get(currentId) : undefined;
   const word = card ? wordsById.get(card.wordId) : undefined;
+  const isRecognition = card?.direction === 'recognition';
+  const expected = word ? (isRecognition ? word.translation : word.term) : '';
+
+  const nextCard = useCallback(() => {
+    setRevealed(false);
+    setTyped('');
+    setVerdict(null);
+  }, []);
+
+  // Le champ reprend la main à chaque nouvelle carte, pour enchaîner sans souris.
+  useEffect(() => {
+    if (typingMode && !revealed) inputRef.current?.focus();
+  }, [typingMode, revealed, currentId]);
 
   const handleAnswer = useCallback(
     async (grade: Grade) => {
       if (!card || busy) return;
       setBusy(true);
       try {
-        const updated = await answer(card, grade);
+        const updated = await answer(card, grade, verdict === null ? 'reveal' : 'typing');
         setTally((previous) =>
           grade === 'known'
             ? { ...previous, known: previous.known + 1 }
             : { ...previous, unknown: previous.unknown + 1 },
         );
+        const returning = returnsInSession(updated, Date.now());
         setOrder((previous) =>
-          returnsInSession(updated, Date.now())
-            ? requeue(previous, updated.id)
-            : previous.filter((id) => id !== updated.id),
+          returning ? requeue(previous, updated.id) : previous.filter((id) => id !== updated.id),
         );
         setLastOutcome(
-          returnsInSession(updated, Date.now())
+          returning
             ? 'à revoir dans cette séance'
             : `prochaine fois ${describeNextDue(updated, Date.now())}`,
         );
-        setRevealed(false);
+        nextCard();
       } finally {
         setBusy(false);
       }
     },
-    [card, busy, answer],
+    [card, busy, answer, verdict, nextCard],
   );
 
   const handleSkip = useCallback(() => {
@@ -72,8 +95,15 @@ export default function SessionPage() {
     setSkipped((previous) => new Set(previous).add(card.id));
     setOrder((previous) => sendToBack(previous, card.id));
     setLastOutcome(null);
-    setRevealed(false);
-  }, [card, order.length]);
+    nextCard();
+  }, [card, order.length, nextCard]);
+
+  function handleCheck(event: FormEvent) {
+    event.preventDefault();
+    if (!typed.trim()) return;
+    setVerdict(checkTypedAnswer(expected, typed));
+    setRevealed(true);
+  }
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -103,14 +133,12 @@ export default function SessionPage() {
     );
   }
 
-  if (!card || !word) {
-    return <SessionSummary tally={tally} />;
-  }
+  if (!card || !word) return <SessionSummary tally={tally} />;
 
   const remaining = new Set(order).size;
   const progress = Math.round(((initialCount - remaining) / initialCount) * 100);
   const target = getLanguage(word.lang);
-  const isRecognition = card.direction === 'recognition';
+  const direction = isRecognition ? `${target.label} → Français` : `Français → ${target.label}`;
   const alreadySkipped = skipped.has(card.id);
 
   return (
@@ -127,10 +155,16 @@ export default function SessionPage() {
 
       {revealed ? (
         <div className="flashcard">
-          <span className="flashcard__tag">
-            {isRecognition ? `${target.label} → Français` : `Français → ${target.label}`}
-          </span>
+          <span className="flashcard__tag">{direction}</span>
           <PromptText word={word} recognition={isRecognition} />
+          {verdict && (
+            <span className={`verdict verdict--${verdict}`}>
+              {VERDICT_LABEL[verdict]}
+              {verdict === 'wrong' && typed.trim() && (
+                <span className="verdict__typed">tu as écrit « {typed.trim()} »</span>
+              )}
+            </span>
+          )}
           <div className="flashcard__divider" />
           {isRecognition ? (
             <>
@@ -147,6 +181,11 @@ export default function SessionPage() {
           )}
           {lastOutcome && <span className="flashcard__hint">{lastOutcome}</span>}
         </div>
+      ) : typingMode ? (
+        <div className="flashcard">
+          <span className="flashcard__tag">{direction}</span>
+          <PromptText word={word} recognition={isRecognition} />
+        </div>
       ) : (
         <button
           type="button"
@@ -154,12 +193,36 @@ export default function SessionPage() {
           onClick={() => setRevealed(true)}
           aria-label="Révéler la traduction"
         >
-          <span className="flashcard__tag">
-            {isRecognition ? `${target.label} → Français` : `Français → ${target.label}`}
-          </span>
+          <span className="flashcard__tag">{direction}</span>
           <PromptText word={word} recognition={isRecognition} />
           <span className="flashcard__hint">Touche pour révéler</span>
         </button>
+      )}
+
+      {!revealed && typingMode && (
+        <form className="typing" onSubmit={handleCheck}>
+          <input
+            ref={inputRef}
+            className="input"
+            value={typed}
+            onChange={(event) => setTyped(event.target.value)}
+            placeholder={isRecognition ? 'Traduction en français' : `Réponse en ${target.label.toLowerCase()}`}
+            lang={isRecognition ? 'fr' : target.htmlLang}
+            autoComplete="off"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            aria-label="Ta réponse"
+          />
+          <div className="row">
+            <button className="btn btn--primary" type="submit" disabled={!typed.trim()}>
+              Vérifier
+            </button>
+            <button className="btn btn--ghost" type="button" onClick={() => setRevealed(true)}>
+              Je ne sais pas
+            </button>
+          </div>
+        </form>
       )}
 
       {revealed && (
@@ -198,7 +261,9 @@ function PromptText({ word, recognition }: { word: Word; recognition: boolean })
   if (!recognition) return <span className="flashcard__prompt">{word.translation}</span>;
   return (
     <span
-      className={target.needsReading ? 'flashcard__prompt flashcard__prompt--cjk' : 'flashcard__prompt'}
+      className={
+        target.needsReading ? 'flashcard__prompt flashcard__prompt--cjk' : 'flashcard__prompt'
+      }
       lang={target.htmlLang}
     >
       {word.term}
@@ -234,4 +299,3 @@ function SessionSummary({ tally }: { tally: Tally }) {
     </section>
   );
 }
-

@@ -6,11 +6,13 @@ import SessionPage from '../pages/SessionPage';
 import LibraryPage from '../pages/LibraryPage';
 import AddWordPage from '../pages/AddWordPage';
 import SettingsPage from '../pages/SettingsPage';
+import StatsPage from '../pages/StatsPage';
 
 const LINKS = [
   { to: '/', icon: '◎', label: 'Accueil' },
   { to: '/ajouter', icon: '＋', label: 'Ajouter' },
-  { to: '/bibliotheque', icon: '☰', label: 'Bibliothèque' },
+  { to: '/bibliotheque', icon: '☰', label: 'Biblio' },
+  { to: '/statistiques', icon: '◍', label: 'Stats' },
   { to: '/reglages', icon: '⚙', label: 'Réglages' },
 ];
 
@@ -43,6 +45,7 @@ function Shell() {
             <Route path="/seance" element={<SessionPage />} />
             <Route path="/ajouter" element={<AddWordPage />} />
             <Route path="/bibliotheque" element={<LibraryPage />} />
+            <Route path="/statistiques" element={<StatsPage />} />
             <Route path="/reglages" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

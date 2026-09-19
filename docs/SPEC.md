@@ -156,15 +156,28 @@ recherche est chargé à la demande, pas au démarrage.
 - **Jalon 1 — le cœur utilisable. ✅ livré.** Projet Vite/React/TS, IndexedDB, bibliothèque,
   ajout rapide, séance SM-2 complète avec les trois boutons et les quotas, thème
   clair/sombre, PWA installable, déploiement GitHub Pages, tests de l'algorithme.
-- **Jalon 2 — filet et motivation.** Export/import JSON et rappel de sauvegarde,
+- **Jalon 2 — filet et motivation. ✅ livré.** Export/import JSON et rappel de sauvegarde,
   statistiques et série, mode écriture.
 - **Jalon 3 — les packs.** Script de génération, écran Packs, pack anglais puis
   espagnol/italien/allemand puis chinois.
 - **Jalon 4 — la recherche dictionnaire** intégrée au formulaire d'ajout.
 
+### Décisions prises en cours de route
+
+- La restauration d'une sauvegarde **remplace** tout le contenu, elle ne fusionne pas :
+  fusionner deux plannings de révision sans règle claire produirait des doublons et
+  des échéances incohérentes. Une fusion pourra être ajoutée, mais comme une
+  fonctionnalité à part entière.
+- Les couleurs des graphiques sont validées séparément pour chaque fond
+  (`#5b5bd6` en clair, `#8383ea` en sombre) : la nuance d'interface du mode sombre
+  sortait de la bande de luminosité lisible sur fond foncé.
+- La série de jours ne se casse pas tant que la journée en cours n'est pas entamée,
+  sinon elle tomberait à zéro chaque matin.
+
 ## 8. Hypothèses à corriger si besoin
 
 - L'interface est en français et la langue source est toujours le français.
 - Le pack chinois exige une relecture des traductions (gloses d'origine en anglais).
-- Le mode écriture est une option activable par séance, pas le comportement par défaut.
+- Le mode écriture est un réglage désactivé par défaut, basculable depuis l'accueil
+  juste avant de lancer une séance comme depuis les réglages.
 - Les quotas sont globaux, pas par langue.

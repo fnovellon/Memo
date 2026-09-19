@@ -165,3 +165,58 @@ export async function recordAnswer(
 
   return { card: updated, log: entry, counts };
 }
+
+export async function listReviewLogs(since?: number): Promise<ReviewLog[]> {
+  const db = await getDB();
+  if (since === undefined) return db.getAll('reviewLogs');
+  return db.getAllFromIndex('reviewLogs', 'by-date', IDBKeyRange.lowerBound(since));
+}
+
+export async function listDaily(): Promise<DailyCounts[]> {
+  const db = await getDB();
+  return db.getAll('daily');
+}
+
+export interface Snapshot {
+  words: Word[];
+  cards: Card[];
+  reviewLogs: ReviewLog[];
+  daily: DailyCounts[];
+  settings: Settings;
+}
+
+export async function readSnapshot(): Promise<Snapshot> {
+  const [words, cards, reviewLogs, daily, settings] = await Promise.all([
+    listWords(),
+    listCards(),
+    listReviewLogs(),
+    listDaily(),
+    loadSettings(),
+  ]);
+  return { words, cards, reviewLogs, daily, settings };
+}
+
+/**
+ * Remplace l'intégralité du contenu par celui d'une sauvegarde. Tout est vidé puis
+ * réécrit dans une seule transaction : en cas d'échec, rien n'est perdu.
+ */
+export async function replaceAll(snapshot: Snapshot): Promise<void> {
+  const db = await getDB();
+  const tx = db.transaction(['words', 'cards', 'reviewLogs', 'daily', 'settings'], 'readwrite');
+
+  await Promise.all([
+    tx.objectStore('words').clear(),
+    tx.objectStore('cards').clear(),
+    tx.objectStore('reviewLogs').clear(),
+    tx.objectStore('daily').clear(),
+    tx.objectStore('settings').clear(),
+  ]);
+
+  for (const word of snapshot.words) await tx.objectStore('words').put(word);
+  for (const card of snapshot.cards) await tx.objectStore('cards').put(card);
+  for (const entry of snapshot.reviewLogs) await tx.objectStore('reviewLogs').put(entry);
+  for (const day of snapshot.daily) await tx.objectStore('daily').put(day);
+  await tx.objectStore('settings').put({ ...DEFAULT_SETTINGS, ...snapshot.settings, key: SETTINGS_KEY });
+
+  await tx.done;
+}

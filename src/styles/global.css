@@ -572,3 +572,226 @@ button.flashcard {
     display: none;
   }
 }
+
+/* ---------- Graphiques ---------- */
+/* Couleur de marque validée pour chaque fond : teinte plus sombre en mode sombre,
+   la nuance d'interface sortait de la bande de luminosité lisible. */
+
+:root {
+  --chart-bar: #5b5bd6;
+  --chart-grid: #dedee6;
+}
+
+:root[data-theme='dark'] {
+  --chart-bar: #8383ea;
+  --chart-grid: #2f2f3d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --chart-bar: #8383ea;
+    --chart-grid: #2f2f3d;
+  }
+}
+
+.chart {
+  margin: 0;
+}
+
+.chart + .chart {
+  margin-top: 22px;
+}
+
+.chart__title {
+  font-size: 14px;
+  font-weight: 650;
+  margin-bottom: 12px;
+}
+
+.chart__plot {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 108px;
+  /* Ligne de base discrète : c'est un repère, pas une donnée. */
+  border-bottom: 1px solid var(--chart-grid);
+  padding-bottom: 1px;
+}
+
+.chart__col {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  cursor: default;
+}
+
+.chart__bar {
+  width: 100%;
+  max-width: 18px;
+  background: var(--chart-bar);
+  /* Extrémité arrondie côté donnée, carrée sur la ligne de base. */
+  border-radius: 4px 4px 0 0;
+  transition: opacity 0.15s ease;
+}
+
+.chart__bar--active {
+  opacity: 0.75;
+}
+
+.chart__value {
+  position: absolute;
+  bottom: 100%;
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--text-muted);
+  padding-bottom: 2px;
+  white-space: nowrap;
+}
+
+.chart__tip {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: var(--text);
+  color: var(--surface);
+  font-size: 11px;
+  white-space: nowrap;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.chart__axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.chart__empty {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin: 0 0 4px;
+}
+
+.chart__data {
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.chart__data summary {
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.chart__table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+.chart__table th,
+.chart__table td {
+  text-align: left;
+  padding: 3px 0;
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+}
+
+.chart__table td {
+  text-align: right;
+}
+
+.breakdown {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.breakdown li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.breakdown li:last-child {
+  border-bottom: none;
+}
+
+.switch {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.switch input {
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+.switch--inline {
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  color: var(--text-muted);
+}
+
+.switch--inline input {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+}
+
+/* ---------- Mode écriture ---------- */
+
+.typing {
+  margin-top: 14px;
+}
+
+.typing .row {
+  margin-top: 10px;
+}
+
+.typing .btn {
+  flex: 1;
+}
+
+.verdict {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.verdict--exact {
+  color: var(--known);
+}
+
+.verdict--close {
+  color: var(--unknown);
+}
+
+.verdict--wrong {
+  color: var(--danger);
+}
+
+.verdict__typed {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}

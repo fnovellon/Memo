@@ -28,6 +28,8 @@ interface StoreValue extends StoreState {
   setWordSuspended: (wordId: string, suspended: boolean) => Promise<void>;
   answer: (card: Card, grade: Grade, mode?: ReviewMode) => Promise<Card>;
   updateSettings: (patch: Partial<Settings>) => Promise<void>;
+  /** Relit tout depuis le stockage — après une restauration de sauvegarde. */
+  reload: () => Promise<void>;
 }
 
 const StoreContext = createContext<StoreValue | null>(null);
@@ -41,21 +43,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     counts: { date: repo.dayKey(Date.now()), newIntroduced: 0, reviewsDone: 0 },
   });
 
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const [words, cards, settings, counts] = await Promise.all([
-        repo.listWords(),
-        repo.listCards(),
-        repo.loadSettings(),
-        repo.getDailyCounts(),
-      ]);
-      if (!cancelled) setState({ ready: true, words, cards, settings, counts });
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const reload = useCallback(async () => {
+    const [words, cards, settings, counts] = await Promise.all([
+      repo.listWords(),
+      repo.listCards(),
+      repo.loadSettings(),
+      repo.getDailyCounts(),
+    ]);
+    setState({ ready: true, words, cards, settings, counts });
   }, []);
+
+  useEffect(() => {
+    void reload();
+  }, [reload]);
 
   const addWord = useCallback(async (input: repo.WordInput) => {
     const word = await repo.addWord(input);
@@ -121,8 +121,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setWordSuspended,
       answer,
       updateSettings,
+      reload,
     }),
-    [state, addWord, updateWord, deleteWord, setWordSuspended, answer, updateSettings],
+    [state, addWord, updateWord, deleteWord, setWordSuspended, answer, updateSettings, reload],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

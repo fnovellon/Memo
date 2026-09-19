@@ -66,6 +66,10 @@ export interface Settings {
   theme: 'system' | 'light' | 'dark';
   /** Langue pré-sélectionnée dans le formulaire d'ajout. */
   lastLang: LangCode;
+  /** Taper la réponse avant de la révéler. */
+  typingMode: boolean;
+  /** Date du dernier export, qui déclenche le rappel de sauvegarde. */
+  lastExportAt: number | null;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -73,6 +77,8 @@ export const DEFAULT_SETTINGS: Settings = {
   reviewsPerDay: 150,
   theme: 'system',
   lastLang: 'en',
+  typingMode: false,
+  lastExportAt: null,
 };
 
 /** Compteurs du jour, utilisés pour appliquer les quotas. Clé : `YYYY-MM-DD`. */

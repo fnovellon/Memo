@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import { useStore } from '../app/store';
 import { summarizeDue } from '../domain/session';
 import { LANGUAGES, languageLabel } from '../domain/languages';
+import { shouldRemindBackup } from '../domain/stats';
 
 export default function HomePage() {
-  const { words, cards, settings, counts } = useStore();
+  const { words, cards, settings, counts, updateSettings } = useStore();
   const [lang, setLang] = useState<string>('all');
 
   const langsInUse = useMemo(() => {
@@ -25,6 +26,7 @@ export default function HomePage() {
   );
 
   const learned = cards.filter((card) => card.state === 'review' && !card.suspended).length;
+  const needsBackup = shouldRemindBackup(settings.lastExportAt, words.length, Date.now());
 
   if (words.length === 0) {
     return (
@@ -46,6 +48,13 @@ export default function HomePage() {
   return (
     <>
       <h1 className="page-title">Aujourd’hui</h1>
+
+      {needsBackup && (
+        <p className="notice">
+          Ta bibliothèque n’a pas de sauvegarde récente. Elle ne vit que dans ce navigateur —{' '}
+          <Link to="/reglages">exporte-la</Link>.
+        </p>
+      )}
 
       {langsInUse.length > 1 && (
         <div className="toolbar">
@@ -74,6 +83,16 @@ export default function HomePage() {
                 lang === 'all' ? '' : ` en ${languageLabel(lang).toLowerCase()}`
               }`}
         </p>
+        {summary.total > 0 && (
+          <label className="switch switch--inline">
+            <input
+              type="checkbox"
+              checked={settings.typingMode}
+              onChange={(event) => void updateSettings({ typingMode: event.target.checked })}
+            />
+            <span className="small">Taper les réponses</span>
+          </label>
+        )}
         {summary.total > 0 ? (
           <Link
             className="btn btn--primary btn--block"

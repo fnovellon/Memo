@@ -21,6 +21,17 @@ reconnaître (langue étrangère → français), une pour le produire (français
 L'ordonnancement suit **SM-2**, l'algorithme de SuperMemo repris par Anki. L'historique
 complet des révisions est conservé pour permettre une bascule vers FSRS sans perte.
 
+En option, le **mode écriture** demande de taper la réponse avant de la révéler : toute
+variante listée dans la traduction est acceptée, et une faute d'accent est signalée
+comme telle plutôt que comptée fausse.
+
+## Sauvegarde
+
+Les données ne vivent que dans le navigateur. Les réglages permettent d'exporter toute
+la bibliothèque et sa progression dans un fichier JSON, et de la restaurer — la
+restauration remplace le contenu existant, elle ne fusionne pas. Passé dix mots, l'accueil
+rappelle qu'une sauvegarde est nécessaire si le dernier export date de plus de deux semaines.
+
 ## Développement
 
 ```bash
@@ -48,7 +59,8 @@ Pour activer la publication la première fois : **Settings → Pages → Source 
 src/domain/     règles pures : types, ordonnancement SM-2, composition des séances (testé)
 src/data/       persistance IndexedDB
 src/app/        coquille React, contexte applicatif, thème
-src/pages/      accueil, séance, bibliothèque, ajout, réglages
+src/components/ graphiques
+src/pages/      accueil, séance, bibliothèque, ajout, statistiques, réglages
 ```
 
 Le dossier `src/domain` ne dépend ni de React ni du stockage : c'est le cœur du produit,
