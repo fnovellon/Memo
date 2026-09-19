@@ -46,8 +46,9 @@ Les icônes PWA sont générées sans dépendance externe : `node scripts/genera
 
 ## Version
 
-Les réglages affichent la version de l'application suivie du commit qui l'a produite
-(`Memo 0.2.0 · 50f06aa`), injectés au build depuis `package.json` et depuis git —
+Un bandeau présent sur tous les écrans affiche la version de l'application suivie du
+commit qui l'a produite (`0.2.0 · 50f06aa`), injectés au build depuis `package.json`
+et depuis git —
 `GITHUB_SHA` dans une action, `git rev-parse` en local. On sait ainsi exactement ce
 qui tourne dans le navigateur. Chaque sauvegarde exportée porte la même version.
 

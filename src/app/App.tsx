@@ -1,6 +1,7 @@
 import { HashRouter, NavLink, Navigate, Route, Routes } from 'react-router-dom';
 import { StoreProvider, useStore } from './store';
 import { useTheme } from './useTheme';
+import { APP_BUILD } from './version';
 import HomePage from '../pages/HomePage';
 import SessionPage from '../pages/SessionPage';
 import LibraryPage from '../pages/LibraryPage';
@@ -37,6 +38,12 @@ function Shell() {
 
   return (
     <div className="app">
+      <header className="topbar">
+        <span className="topbar__brand">Memo</span>
+        <span className="topbar__version" title="Version installée et commit correspondant">
+          {APP_BUILD}
+        </span>
+      </header>
       <Nav />
       <main className="app__main">
         {ready ? (
