@@ -33,6 +33,17 @@ avant d'être stockée localement — une photo de banque passe ainsi de plusieu
 mégaoctets à quelques kilo-octets. Elle apparaît au verso de la carte, avec le nom
 de son auteur et sa licence.
 
+## Import depuis Anki
+
+Les réglages ouvrent un écran d'import qui accepte un paquet **`.apkg`** ou un export
+**texte** d'Anki. Le paquet apporte en plus la progression (intervalles, facilité,
+oublis, cartes suspendues) et les images des notes. L'écran montre les champs détectés,
+propose une correspondance et la laisse corriger avant d'écrire quoi que ce soit ; le
+rapport final dit ce qui a été écarté et pourquoi.
+
+Le moteur SQLite nécessaire à la lecture des paquets n'est téléchargé qu'au premier
+import, pour ne pas alourdir l'installation.
+
 ## Sauvegarde
 
 Les données ne vivent que dans le navigateur. Les réglages permettent d'exporter toute

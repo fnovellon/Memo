@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { useStore } from '../app/store';
 import { createBackup, downloadBackup, restoreBackup } from '../data/backup';
 import { BackupError, parseBackup } from '../domain/backup';
@@ -140,6 +141,19 @@ export default function SettingsPage() {
             </span>
           </span>
         </label>
+      </section>
+
+      <section className="panel">
+        <h2 className="field__label" style={{ marginBottom: 12 }}>
+          Importer
+        </h2>
+        <p className="small" style={{ marginTop: 0 }}>
+          Reprends un paquet Anki avec ses notes, sa progression et ses images, ou un
+          simple export texte.
+        </p>
+        <Link className="btn btn--block" to="/importer">
+          Importer depuis Anki
+        </Link>
       </section>
 
       <section className="panel">

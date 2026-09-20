@@ -30,6 +30,7 @@ La langue source est le **français**. L'interface est en français.
 | Sauvegarde | export/import JSON, avec rappel si l'export date trop |
 | Bonus retenus | statistiques et série de jours, mode écriture, thème clair/sombre |
 | Images | recherche Openverse, une image par mot, affichée au verso, hors sauvegarde |
+| Import Anki | paquets `.apkg` et exports texte, planning et images repris |
 | Déploiement | GitHub Pages via GitHub Actions à chaque push |
 
 Écartés pour l'instant : phrases d'exemple, tags/thèmes, prononciation audio,
@@ -176,6 +177,29 @@ recherche est chargé à la demande, pas au démarrage.
 - **Jalon 3 — les packs.** Script de génération, écran Packs, pack anglais puis
   espagnol/italien/allemand puis chinois.
 - **Jalon 4 — la recherche dictionnaire** intégrée au formulaire d'ajout.
+
+### Import Anki
+
+Deux entrées : le **paquet `.apkg`** (archive ZIP contenant une base SQLite et les
+médias) et l'**export texte** d'Anki. Les deux formats de paquet sont gérés :
+l'ancien (SQLite en clair, index média JSON) et le récent (SQLite et médias
+compressés en zstd, index média en protobuf).
+
+Le moteur SQLite (658 Ko) n'est chargé qu'au moment d'un import, exclu du
+pré-cache du service worker puis mis en cache au premier usage : l'installation
+reste à 388 Ko.
+
+Conversion du planning Anki vers SM-2 : l'intervalle est repris tel quel, la
+facilité passe des millièmes d'Anki à notre échelle avec le plancher à 1,3, et
+l'échéance est recalculée depuis la date de création de la collection. Les cartes
+d'Anki correspondent à nos deux sens dans leur ordre : la première à la
+reconnaissance, la seconde à la production. **Les cartes encore en apprentissage
+repartent à neuf** — leur état interne n'a pas d'équivalent ici, et elles sont de
+toute façon à revoir immédiatement.
+
+Ce qui est écarté est compté et annoncé : notes vides, notes à trous (elles ne se
+ramènent pas à un couple mot/traduction) et doublons. Un seul type de note est
+importé à la fois, pour que la correspondance des champs reste explicite.
 
 ### Réserve sur les images
 

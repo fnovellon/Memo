@@ -36,6 +36,19 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'],
+      workbox: {
+        // Le moteur SQLite ne sert qu'à l'import Anki : le pré-télécharger
+        // triplerait le poids de l'installation pour une fonction utilisée une fois.
+        // Il est mis en cache au premier usage, et reste donc disponible hors-ligne.
+        globIgnores: ['**/sql-wasm*.wasm'],
+        runtimeCaching: [
+          {
+            urlPattern: /sql-wasm.*\.wasm$/,
+            handler: 'CacheFirst',
+            options: { cacheName: 'sqlite-engine', expiration: { maxEntries: 2 } },
+          },
+        ],
+      },
       manifest: {
         name: 'Memo — vocabulaire',
         short_name: 'Memo',

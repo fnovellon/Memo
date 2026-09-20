@@ -273,3 +273,14 @@ export async function pruneOrphanImages(): Promise<number> {
   await tx.done;
   return orphans.length;
 }
+
+/** Écrit d'un coup un lot de mots et leurs cartes — un import peut en porter des milliers. */
+export async function bulkInsert(words: Word[], cards: Card[]): Promise<void> {
+  const db = await getDB();
+  const tx = db.transaction(['words', 'cards'], 'readwrite');
+  const wordStore = tx.objectStore('words');
+  const cardStore = tx.objectStore('cards');
+  for (const word of words) await wordStore.put(word);
+  for (const card of cards) await cardStore.put(card);
+  await tx.done;
+}

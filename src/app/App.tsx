@@ -8,6 +8,7 @@ import LibraryPage from '../pages/LibraryPage';
 import AddWordPage from '../pages/AddWordPage';
 import SettingsPage from '../pages/SettingsPage';
 import StatsPage from '../pages/StatsPage';
+import ImportPage from '../pages/ImportPage';
 
 const LINKS = [
   { to: '/', icon: '◎', label: 'Accueil' },
@@ -53,6 +54,7 @@ function Shell() {
             <Route path="/ajouter" element={<AddWordPage />} />
             <Route path="/bibliotheque" element={<LibraryPage />} />
             <Route path="/statistiques" element={<StatsPage />} />
+            <Route path="/importer" element={<ImportPage />} />
             <Route path="/reglages" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

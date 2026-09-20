@@ -7,7 +7,7 @@ export const OPENVERSE_ENDPOINT = 'https://api.openverse.org/v1/images/';
 
 /** Provenance d'une image, conservée pour pouvoir créditer son auteur. */
 export interface ImageSource {
-  provider: 'openverse';
+  provider: 'openverse' | 'anki';
   id: string;
   title: string;
   creator: string;
@@ -43,6 +43,11 @@ export function fitWithin(
  * de nommer l'auteur : la mention est donc construite et stockée avec l'image.
  */
 export function buildAttribution(source: ImageSource): string {
+  // Une image venue d'un paquet Anki n'a pas de licence connue : on dit d'où elle
+  // vient plutôt que d'inventer un crédit.
+  if (source.provider === 'anki') {
+    return source.title.trim() ? `Importée d'Anki — ${source.title.trim()}` : "Importée d'Anki";
+  }
   const creator = source.creator.trim() || 'auteur inconnu';
   const title = source.title.trim() || 'sans titre';
   return `${title} — ${creator} (${source.license.toUpperCase()})`;

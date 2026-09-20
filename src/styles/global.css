@@ -961,3 +961,24 @@ button.flashcard {
   object-fit: cover;
   border-radius: var(--radius-sm);
 }
+
+.preview {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+}
+
+.preview__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  padding: 3px 0;
+}
+
+.preview__row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
