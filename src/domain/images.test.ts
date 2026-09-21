@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   MAX_IMAGE_SIZE,
+  MAX_SOURCE_BYTES,
   buildAttribution,
+  checkImageFile,
+  describeImageRejection,
   fitWithin,
   normalizeOpenverseResponse,
   normalizeOpenverseResult,
@@ -107,5 +110,36 @@ describe('terme de recherche proposé', () => {
 
   it('se rabat sur le mot étranger si la traduction est vide', () => {
     expect(suggestQuery('  ', 'cat')).toBe('cat');
+  });
+});
+
+describe('contrôle d’un fichier image', () => {
+  it('accepte une photo ordinaire', () => {
+    expect(checkImageFile({ type: 'image/jpeg', size: 2_000_000 })).toBeNull();
+  });
+
+  it('refuse ce qui n’est pas une image', () => {
+    expect(checkImageFile({ type: 'application/pdf', size: 1000 })).toBe('type');
+  });
+
+  it('refuse un fichier vide ou démesuré', () => {
+    expect(checkImageFile({ type: 'image/jpeg', size: 0 })).toBe('empty');
+    expect(checkImageFile({ type: 'image/jpeg', size: MAX_SOURCE_BYTES + 1 })).toBe('size');
+  });
+
+  it('explique chaque refus en français', () => {
+    expect(describeImageRejection('type')).toMatch(/pas une image/);
+    expect(describeImageRejection('size')).toMatch(/25 Mo/);
+    expect(describeImageRejection('empty')).toMatch(/vide/);
+  });
+});
+
+describe('crédit d’une photo personnelle', () => {
+  it('ne cherche personne à créditer', () => {
+    expect(
+      buildAttribution({
+        provider: 'device', id: 'x', title: '', creator: '', license: '', licenseUrl: '', pageUrl: '',
+      }),
+    ).toBe('Photo personnelle');
   });
 });

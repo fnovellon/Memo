@@ -7,7 +7,7 @@ export const OPENVERSE_ENDPOINT = 'https://api.openverse.org/v1/images/';
 
 /** Provenance d'une image, conservée pour pouvoir créditer son auteur. */
 export interface ImageSource {
-  provider: 'openverse' | 'anki';
+  provider: 'openverse' | 'anki' | 'device';
   id: string;
   title: string;
   creator: string;
@@ -43,6 +43,8 @@ export function fitWithin(
  * de nommer l'auteur : la mention est donc construite et stockée avec l'image.
  */
 export function buildAttribution(source: ImageSource): string {
+  // Une photo personnelle n'a personne d'autre à créditer.
+  if (source.provider === 'device') return 'Photo personnelle';
   // Une image venue d'un paquet Anki n'a pas de licence connue : on dit d'où elle
   // vient plutôt que d'inventer un crédit.
   if (source.provider === 'anki') {
@@ -101,6 +103,34 @@ export function normalizeOpenverseResponse(payload: unknown): ImageCandidate[] {
   return results
     .map(normalizeOpenverseResult)
     .filter((candidate): candidate is ImageCandidate => candidate !== null);
+}
+
+/** Au-delà, on refuse avant de décoder : une photo brute de cette taille ferait tomber l'onglet. */
+export const MAX_SOURCE_BYTES = 25 * 1024 * 1024;
+
+export type ImageRejection = 'type' | 'size' | 'empty';
+
+/**
+ * Contrôle un fichier avant tout décodage. Les téléphones produisent parfois des
+ * formats que le navigateur ne sait pas lire : mieux vaut le dire tout de suite
+ * que d'échouer au milieu du traitement.
+ */
+export function checkImageFile(file: { type: string; size: number }): ImageRejection | null {
+  if (file.size === 0) return 'empty';
+  if (!file.type.startsWith('image/')) return 'type';
+  if (file.size > MAX_SOURCE_BYTES) return 'size';
+  return null;
+}
+
+export function describeImageRejection(rejection: ImageRejection): string {
+  switch (rejection) {
+    case 'type':
+      return 'Ce fichier n’est pas une image.';
+    case 'size':
+      return `Cette image dépasse ${Math.round(MAX_SOURCE_BYTES / (1024 * 1024))} Mo. Prends une photo de moindre qualité.`;
+    case 'empty':
+      return 'Ce fichier est vide.';
+  }
 }
 
 /** Terme de recherche proposé par défaut : le français décrit mieux la scène cherchée. */

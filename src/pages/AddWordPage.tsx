@@ -1,23 +1,59 @@
-import { useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useStore } from '../app/store';
 import ImagePicker from '../components/ImagePicker';
+import PhotoButton from '../components/PhotoButton';
 import { LANGUAGES, needsReading } from '../domain/languages';
-import { suggestQuery, type ImageCandidate } from '../domain/images';
+import {
+  checkImageFile,
+  describeImageRejection,
+  suggestQuery,
+  type ImageCandidate,
+} from '../domain/images';
 import { findDuplicate } from '../data/repository';
 
+/**
+ * Image retenue avant que le mot n'existe : elle n'est rattachée qu'une fois le
+ * mot créé, puisqu'elle se range sous son identifiant.
+ */
+type PendingImage =
+  | { kind: 'openverse'; candidate: ImageCandidate; previewUrl: string; credit: string }
+  | { kind: 'photo'; file: File; previewUrl: string; credit: string };
+
 export default function AddWordPage() {
-  const { settings, updateSettings, addWord, setWordImage } = useStore();
+  const { settings, updateSettings, addWord, setWordImage, setWordPhoto } = useStore();
   const [lang, setLang] = useState(settings.lastLang);
   const [term, setTerm] = useState('');
   const [translation, setTranslation] = useState('');
   const [reading, setReading] = useState('');
   const [notice, setNotice] = useState<{ kind: 'ok' | 'warn'; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
-  const [image, setImage] = useState<ImageCandidate | null>(null);
+  const [image, setImage] = useState<PendingImage | null>(null);
   const [picking, setPicking] = useState(false);
   const termRef = useRef<HTMLInputElement>(null);
 
   const showReading = needsReading(lang);
+
+  // Une URL d'objet doit être libérée, sinon la photo reste en mémoire pour rien.
+  useEffect(() => {
+    if (image?.kind !== 'photo') return;
+    const url = image.previewUrl;
+    return () => URL.revokeObjectURL(url);
+  }, [image]);
+
+  function choosePhoto(file: File) {
+    const rejection = checkImageFile(file);
+    if (rejection) {
+      setNotice({ kind: 'warn', text: describeImageRejection(rejection) });
+      return;
+    }
+    setNotice(null);
+    setImage({
+      kind: 'photo',
+      file,
+      previewUrl: URL.createObjectURL(file),
+      credit: 'Photo personnelle',
+    });
+  }
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -50,7 +86,8 @@ export default function AddWordPage() {
       let imageFailed = false;
       if (image) {
         try {
-          await setWordImage(word.id, image);
+          if (image.kind === 'photo') await setWordPhoto(word.id, image.file);
+          else await setWordImage(word.id, image.candidate);
         } catch {
           imageFailed = true;
         }
@@ -138,27 +175,30 @@ export default function AddWordPage() {
         <div className="image-field">
           {image ? (
             <>
-              <img src={image.thumbnail} alt="" />
+              <img src={image.previewUrl} alt="" />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div className="small">Image choisie</div>
-                <div className="small muted">
-                  {image.source.creator || 'auteur inconnu'} ·{' '}
-                  {image.source.license.toUpperCase()}
-                </div>
+                <div className="small muted">{image.credit}</div>
               </div>
               <button className="btn btn--ghost" type="button" onClick={() => setImage(null)}>
                 Retirer
               </button>
             </>
           ) : (
-            <button
-              className="btn btn--ghost btn--block"
-              type="button"
-              onClick={() => setPicking(true)}
-              disabled={!term.trim() && !translation.trim()}
-            >
-              Ajouter une image (facultatif)
-            </button>
+            <div className="row" style={{ width: '100%' }}>
+              <button
+                className="btn btn--ghost"
+                type="button"
+                style={{ flex: 1 }}
+                onClick={() => setPicking(true)}
+                disabled={!term.trim() && !translation.trim()}
+              >
+                Chercher une image
+              </button>
+              <PhotoButton onPick={choosePhoto} className="btn btn--ghost" >
+                Photo
+              </PhotoButton>
+            </div>
           )}
         </div>
 
@@ -174,7 +214,12 @@ export default function AddWordPage() {
         <ImagePicker
           initialQuery={suggestQuery(translation, term)}
           onPick={(candidate) => {
-            setImage(candidate);
+            setImage({
+              kind: 'openverse',
+              candidate,
+              previewUrl: candidate.thumbnail,
+              credit: `${candidate.source.creator || 'auteur inconnu'} · ${candidate.source.license.toUpperCase()}`,
+            });
             setPicking(false);
           }}
           onClose={() => setPicking(false)}

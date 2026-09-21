@@ -1,10 +1,16 @@
 import { useMemo, useState } from 'react';
 import { useStore } from '../app/store';
 import ImagePicker from '../components/ImagePicker';
+import PhotoButton from '../components/PhotoButton';
 import { useWordImage } from '../app/useWordImage';
 import { LANGUAGES, getLanguage, needsReading } from '../domain/languages';
 import { describeNextDue } from '../domain/scheduler';
-import { suggestQuery, type ImageCandidate } from '../domain/images';
+import {
+  checkImageFile,
+  describeImageRejection,
+  suggestQuery,
+  type ImageCandidate,
+} from '../domain/images';
 import type { Word } from '../domain/types';
 
 export default function LibraryPage() {
@@ -167,7 +173,7 @@ function WordEditor({
   onSave: (word: Word) => Promise<void>;
   onCancel: () => void;
 }) {
-  const { setWordImage, removeWordImage, hasImage } = useStore();
+  const { setWordImage, setWordPhoto, removeWordImage, hasImage } = useStore();
   const [term, setTerm] = useState(word.term);
   const [translation, setTranslation] = useState(word.translation);
   const [reading, setReading] = useState(word.reading ?? '');
@@ -182,6 +188,20 @@ function WordEditor({
       await setWordImage(word.id, candidate);
     } catch {
       setImageError('L’image n’a pas pu être enregistrée.');
+    }
+  }
+
+  async function pickPhoto(file: File) {
+    const rejection = checkImageFile(file);
+    if (rejection) {
+      setImageError(describeImageRejection(rejection));
+      return;
+    }
+    setImageError(null);
+    try {
+      await setWordPhoto(word.id, file);
+    } catch {
+      setImageError('Cette photo n’a pas pu être enregistrée.');
     }
   }
 
@@ -228,6 +248,7 @@ function WordEditor({
             <button className="btn btn--ghost" type="button" onClick={() => setPicking(true)}>
               Changer
             </button>
+            <PhotoButton onPick={(file) => void pickPhoto(file)}>Photo</PhotoButton>
             <button
               className="btn btn--danger"
               type="button"
@@ -237,13 +258,17 @@ function WordEditor({
             </button>
           </>
         ) : (
-          <button
-            className="btn btn--ghost btn--block"
-            type="button"
-            onClick={() => setPicking(true)}
-          >
-            Ajouter une image
-          </button>
+          <div className="row" style={{ width: '100%' }}>
+            <button
+              className="btn btn--ghost"
+              type="button"
+              style={{ flex: 1 }}
+              onClick={() => setPicking(true)}
+            >
+              Chercher une image
+            </button>
+            <PhotoButton onPick={(file) => void pickPhoto(file)}>Photo</PhotoButton>
+          </div>
         )}
       </div>
 

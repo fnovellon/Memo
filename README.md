@@ -27,11 +27,12 @@ comme telle plutôt que comptée fausse.
 
 ## Images
 
-Chaque mot peut porter une image, cherchée dans [Openverse](https://openverse.org)
-(licences libres, sans clé d'API). Elle est réduite à 512 px et réencodée en WebP
+Chaque mot peut porter une image : cherchée dans [Openverse](https://openverse.org)
+(licences libres, sans clé d'API) ou prise avec l'appareil photo du téléphone. Elle est réduite à 512 px et réencodée en WebP
 avant d'être stockée localement — une photo de banque passe ainsi de plusieurs
 mégaoctets à quelques kilo-octets. Elle apparaît au verso de la carte, avec le nom
-de son auteur et sa licence.
+de son auteur et sa licence — ou la simple mention « Photo personnelle ». L'orientation
+EXIF est respectée, pour qu'une photo prise en portrait ne soit pas stockée couchée.
 
 ## Import depuis Anki
 

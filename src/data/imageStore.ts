@@ -2,8 +2,11 @@ import {
   IMAGE_QUALITY,
   MAX_IMAGE_SIZE,
   buildAttribution,
+  checkImageFile,
+  describeImageRejection,
   fitWithin,
   type ImageCandidate,
+  type ImageSource,
 } from '../domain/images';
 import { ImageSearchError, fetchImageBlob } from './openverse';
 import { putImage } from './repository';
@@ -22,7 +25,16 @@ export async function downscale(
   blob: Blob,
   max = MAX_IMAGE_SIZE,
 ): Promise<{ blob: Blob; width: number; height: number }> {
-  const bitmap = await createImageBitmap(blob);
+  let bitmap: ImageBitmap;
+  try {
+    // `from-image` applique l'orientation EXIF : sans cela, une photo prise en
+    // portrait s'afficherait couchée.
+    bitmap = await createImageBitmap(blob, { imageOrientation: 'from-image' });
+  } catch {
+    throw new ImageSearchError(
+      'Ce format d’image n’est pas lisible par le navigateur. Essaie en JPEG ou PNG.',
+    );
+  }
   try {
     const { width, height } = fitWithin(bitmap.width, bitmap.height, max);
     if (width === 0 || height === 0) {
@@ -60,6 +72,42 @@ export async function attachImage(
     height,
     source: candidate.source,
     attribution: buildAttribution(candidate.source),
+    addedAt: now,
+  };
+  await putImage(stored);
+  return stored;
+}
+
+/**
+ * Range une photo prise ou choisie sur l'appareil. Le fichier est contrôlé avant
+ * d'être décodé, puis réduit comme n'importe quelle autre image.
+ */
+export async function attachLocalImage(
+  wordId: string,
+  file: File,
+  now = Date.now(),
+): Promise<StoredImage> {
+  const rejection = checkImageFile(file);
+  if (rejection) throw new ImageSearchError(describeImageRejection(rejection));
+
+  const { blob, width, height } = await downscale(file);
+  const source: ImageSource = {
+    provider: 'device',
+    id: `${file.name || 'photo'}-${now}`,
+    title: file.name,
+    creator: '',
+    license: '',
+    licenseUrl: '',
+    pageUrl: '',
+  };
+
+  const stored: StoredImage = {
+    wordId,
+    blob,
+    width,
+    height,
+    source,
+    attribution: buildAttribution(source),
     addedAt: now,
   };
   await putImage(stored);

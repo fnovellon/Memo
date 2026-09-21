@@ -10,7 +10,7 @@ import {
 import type { Card, DailyCounts, Grade, ReviewMode, Settings, Word } from '../domain/types';
 import { DEFAULT_SETTINGS } from '../domain/types';
 import * as repo from '../data/repository';
-import { attachImage } from '../data/imageStore';
+import { attachImage, attachLocalImage } from '../data/imageStore';
 import type { ImageCandidate } from '../domain/images';
 
 interface StoreState {
@@ -28,6 +28,7 @@ interface StoreValue extends StoreState {
   cardsById: Map<string, Card>;
   hasImage: (wordId: string) => boolean;
   setWordImage: (wordId: string, candidate: ImageCandidate) => Promise<void>;
+  setWordPhoto: (wordId: string, file: File) => Promise<void>;
   removeWordImage: (wordId: string) => Promise<void>;
   addWord: (input: repo.WordInput) => Promise<Word>;
   updateWord: (word: Word) => Promise<void>;
@@ -101,6 +102,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
+  const setWordPhoto = useCallback(async (wordId: string, file: File) => {
+    await attachLocalImage(wordId, file);
+    setState((previous) => ({
+      ...previous,
+      imagedWordIds: previous.imagedWordIds.includes(wordId)
+        ? previous.imagedWordIds
+        : [...previous.imagedWordIds, wordId],
+    }));
+  }, []);
+
   const removeWordImage = useCallback(async (wordId: string) => {
     await repo.deleteImage(wordId);
     setState((previous) => ({
@@ -145,6 +156,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       cardsById: new Map(state.cards.map((card) => [card.id, card])),
       hasImage: (wordId: string) => state.imagedWordIds.includes(wordId),
       setWordImage,
+      setWordPhoto,
       removeWordImage,
       addWord,
       updateWord,
@@ -164,6 +176,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       updateSettings,
       reload,
       setWordImage,
+      setWordPhoto,
       removeWordImage,
     ],
   );

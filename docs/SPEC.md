@@ -29,7 +29,7 @@ La langue source est le **français**. L'interface est en français.
 | Alimentation | formulaire d'ajout rapide + packs de vocabulaire pré-construits + recherche dictionnaire |
 | Sauvegarde | export/import JSON, avec rappel si l'export date trop |
 | Bonus retenus | statistiques et série de jours, mode écriture, thème clair/sombre |
-| Images | recherche Openverse, une image par mot, affichée au verso, hors sauvegarde |
+| Images | recherche Openverse ou photo de l'appareil, une par mot, au verso, hors sauvegarde |
 | Import Anki | paquets `.apkg` et exports texte, planning et images repris |
 | Déploiement | GitHub Pages via GitHub Actions à chaque push |
 
@@ -177,6 +177,19 @@ recherche est chargé à la demande, pas au démarrage.
 - **Jalon 3 — les packs.** Script de génération, écran Packs, pack anglais puis
   espagnol/italien/allemand puis chinois.
 - **Jalon 4 — la recherche dictionnaire** intégrée au formulaire d'ajout.
+
+### Photo de l'appareil
+
+À côté de la recherche Openverse, un bouton **Photo** ouvre le sélecteur natif.
+L'attribut `capture` est volontairement omis : le téléphone propose alors l'appareil
+photo *et* la galerie, là où `capture` imposerait la prise de vue et interdirait de
+reprendre une photo existante.
+
+L'orientation EXIF est appliquée au décodage (`imageOrientation: 'from-image'`) :
+sans cela, une photo prise en portrait serait stockée couchée. Le fichier est
+contrôlé avant décodage — type et taille — car une photo brute peut dépasser ce que
+l'onglet sait traiter, et un format que le navigateur ne lit pas doit être refusé
+avec un motif plutôt qu'échouer en silence.
 
 ### Import Anki
 
