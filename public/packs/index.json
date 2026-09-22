@@ -1,0 +1,210 @@
+{
+  "packs": [
+    {
+      "id": "en-food",
+      "title": "Anglais — Nourriture",
+      "lang": "en",
+      "glossLang": "fr",
+      "theme": "Nourriture",
+      "count": 47,
+      "license": "CC BY 4.0 · GPL v2+ · CC BY-SA 4.0",
+      "attribution": "Thèmes : Open English WordNet (CC BY 4.0), dérivé de Princeton WordNet. Traductions : dictionnaire anglais-français FreeDict (GPL v2+). Ordre : listes de fréquence OpenSubtitles, hermitdave (CC BY-SA 4.0).",
+      "file": "en-food.json"
+    },
+    {
+      "id": "en-animal",
+      "title": "Anglais — Animaux",
+      "lang": "en",
+      "glossLang": "fr",
+      "theme": "Animaux",
+      "count": 104,
+      "license": "CC BY 4.0 · GPL v2+ · CC BY-SA 4.0",
+      "attribution": "Thèmes : Open English WordNet (CC BY 4.0), dérivé de Princeton WordNet. Traductions : dictionnaire anglais-français FreeDict (GPL v2+). Ordre : listes de fréquence OpenSubtitles, hermitdave (CC BY-SA 4.0).",
+      "file": "en-animal.json"
+    },
+    {
+      "id": "en-body",
+      "title": "Anglais — Corps humain",
+      "lang": "en",
+      "glossLang": "fr",
+      "theme": "Corps humain",
+      "count": 40,
+      "license": "CC BY 4.0 · GPL v2+ · CC BY-SA 4.0",
+      "attribution": "Thèmes : Open English WordNet (CC BY 4.0), dérivé de Princeton WordNet. Traductions : dictionnaire anglais-français FreeDict (GPL v2+). Ordre : listes de fréquence OpenSubtitles, hermitdave (CC BY-SA 4.0).",
+      "file": "en-body.json"
+    },
+    {
+      "id": "en-artifact",
+      "title": "Anglais — Objets du quotidien",
+      "lang": "en",
+      "glossLang": "fr",
+      "theme": "Objets du quotidien",
+      "count": 150,
+      "license": "CC BY 4.0 · GPL v2+ · CC BY-SA 4.0",
+      "attribution": "Thèmes : Open English WordNet (CC BY 4.0), dérivé de Princeton WordNet. Traductions : dictionnaire anglais-français FreeDict (GPL v2+). Ordre : listes de fréquence OpenSubtitles, hermitdave (CC BY-SA 4.0).",
+      "file": "en-artifact.json"
+    },
+    {
+      "id": "en-person",
+      "title": "Anglais — Gens et métiers",
+      "lang": "en",
+      "glossLang": "fr",
+      "theme": "Gens et métiers",
+      "count": 150,
+      "license": "CC BY 4.0 · GPL v2+ · CC BY-SA 4.0",
+      "attribution": "Thèmes : Open English WordNet (CC BY 4.0), dérivé de Princeton WordNet. Traductions : dictionnaire anglais-français FreeDict (GPL v2+). Ordre : listes de fréquence OpenSubtitles, hermitdave (CC BY-SA 4.0).",
+      "file": "en-person.json"
+    },
+    {
+      "id": "en-plant",
+      "title": "Anglais — Plantes",
+      "lang": "en",
+      "glossLang": "fr",
+      "theme": "Plantes",
+      "count": 88,
+      "license": "CC BY 4.0 · GPL v2+ · CC BY-SA 4.0",
+      "attribution": "Thèmes : Open English WordNet (CC BY 4.0), dérivé de Princeton WordNet. Traductions : dictionnaire anglais-français FreeDict (GPL v2+). Ordre : listes de fréquence OpenSubtitles, hermitdave (CC BY-SA 4.0).",
+      "file": "en-plant.json"
+    },
+    {
+      "id": "en-location",
+      "title": "Anglais — Lieux",
+      "lang": "en",
+      "glossLang": "fr",
+      "theme": "Lieux",
+      "count": 23,
+      "license": "CC BY 4.0 · GPL v2+ · CC BY-SA 4.0",
+      "attribution": "Thèmes : Open English WordNet (CC BY 4.0), dérivé de Princeton WordNet. Traductions : dictionnaire anglais-français FreeDict (GPL v2+). Ordre : listes de fréquence OpenSubtitles, hermitdave (CC BY-SA 4.0).",
+      "file": "en-location.json"
+    },
+    {
+      "id": "en-time",
+      "title": "Anglais — Temps et calendrier",
+      "lang": "en",
+      "glossLang": "fr",
+      "theme": "Temps et calendrier",
+      "count": 51,
+      "license": "CC BY 4.0 · GPL v2+ · CC BY-SA 4.0",
+      "attribution": "Thèmes : Open English WordNet (CC BY 4.0), dérivé de Princeton WordNet. Traductions : dictionnaire anglais-français FreeDict (GPL v2+). Ordre : listes de fréquence OpenSubtitles, hermitdave (CC BY-SA 4.0).",
+      "file": "en-time.json"
+    },
+    {
+      "id": "en-feeling",
+      "title": "Anglais — Émotions",
+      "lang": "en",
+      "glossLang": "fr",
+      "theme": "Émotions",
+      "count": 20,
+      "license": "CC BY 4.0 · GPL v2+ · CC BY-SA 4.0",
+      "attribution": "Thèmes : Open English WordNet (CC BY 4.0), dérivé de Princeton WordNet. Traductions : dictionnaire anglais-français FreeDict (GPL v2+). Ordre : listes de fréquence OpenSubtitles, hermitdave (CC BY-SA 4.0).",
+      "file": "en-feeling.json"
+    },
+    {
+      "id": "en-motion",
+      "title": "Anglais — Verbes de mouvement",
+      "lang": "en",
+      "glossLang": "fr",
+      "theme": "Verbes de mouvement",
+      "count": 40,
+      "license": "CC BY 4.0 · GPL v2+ · CC BY-SA 4.0",
+      "attribution": "Thèmes : Open English WordNet (CC BY 4.0), dérivé de Princeton WordNet. Traductions : dictionnaire anglais-français FreeDict (GPL v2+). Ordre : listes de fréquence OpenSubtitles, hermitdave (CC BY-SA 4.0).",
+      "file": "en-motion.json"
+    },
+    {
+      "id": "en-communication",
+      "title": "Anglais — Verbes de parole",
+      "lang": "en",
+      "glossLang": "fr",
+      "theme": "Verbes de parole",
+      "count": 99,
+      "license": "CC BY 4.0 · GPL v2+ · CC BY-SA 4.0",
+      "attribution": "Thèmes : Open English WordNet (CC BY 4.0), dérivé de Princeton WordNet. Traductions : dictionnaire anglais-français FreeDict (GPL v2+). Ordre : listes de fréquence OpenSubtitles, hermitdave (CC BY-SA 4.0).",
+      "file": "en-communication.json"
+    },
+    {
+      "id": "ja-jlpt-n5",
+      "title": "Japonais — JLPT N5",
+      "lang": "ja",
+      "glossLang": "en",
+      "theme": "JLPT N5",
+      "remote": "https://raw.githubusercontent.com/jamsinclair/open-anki-jlpt-decks/main/src/n5.csv",
+      "format": "csv",
+      "columns": {
+        "term": 0,
+        "reading": 1,
+        "translation": 2
+      },
+      "skipHeader": true,
+      "license": "MIT",
+      "attribution": "open-anki-jlpt-decks, Jamie Sinclair (MIT)."
+    },
+    {
+      "id": "ja-jlpt-n4",
+      "title": "Japonais — JLPT N4",
+      "lang": "ja",
+      "glossLang": "en",
+      "theme": "JLPT N4",
+      "remote": "https://raw.githubusercontent.com/jamsinclair/open-anki-jlpt-decks/main/src/n4.csv",
+      "format": "csv",
+      "columns": {
+        "term": 0,
+        "reading": 1,
+        "translation": 2
+      },
+      "skipHeader": true,
+      "license": "MIT",
+      "attribution": "open-anki-jlpt-decks, Jamie Sinclair (MIT)."
+    },
+    {
+      "id": "ja-jlpt-n3",
+      "title": "Japonais — JLPT N3",
+      "lang": "ja",
+      "glossLang": "en",
+      "theme": "JLPT N3",
+      "remote": "https://raw.githubusercontent.com/jamsinclair/open-anki-jlpt-decks/main/src/n3.csv",
+      "format": "csv",
+      "columns": {
+        "term": 0,
+        "reading": 1,
+        "translation": 2
+      },
+      "skipHeader": true,
+      "license": "MIT",
+      "attribution": "open-anki-jlpt-decks, Jamie Sinclair (MIT)."
+    },
+    {
+      "id": "ja-jlpt-n2",
+      "title": "Japonais — JLPT N2",
+      "lang": "ja",
+      "glossLang": "en",
+      "theme": "JLPT N2",
+      "remote": "https://raw.githubusercontent.com/jamsinclair/open-anki-jlpt-decks/main/src/n2.csv",
+      "format": "csv",
+      "columns": {
+        "term": 0,
+        "reading": 1,
+        "translation": 2
+      },
+      "skipHeader": true,
+      "license": "MIT",
+      "attribution": "open-anki-jlpt-decks, Jamie Sinclair (MIT)."
+    },
+    {
+      "id": "ja-jlpt-n1",
+      "title": "Japonais — JLPT N1",
+      "lang": "ja",
+      "glossLang": "en",
+      "theme": "JLPT N1",
+      "remote": "https://raw.githubusercontent.com/jamsinclair/open-anki-jlpt-decks/main/src/n1.csv",
+      "format": "csv",
+      "columns": {
+        "term": 0,
+        "reading": 1,
+        "translation": 2
+      },
+      "skipHeader": true,
+      "license": "MIT",
+      "attribution": "open-anki-jlpt-decks, Jamie Sinclair (MIT)."
+    }
+  ]
+}

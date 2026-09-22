@@ -174,9 +174,37 @@ recherche est chargé à la demande, pas au démarrage.
   clair/sombre, PWA installable, déploiement GitHub Pages, tests de l'algorithme.
 - **Jalon 2 — filet et motivation. ✅ livré.** Export/import JSON et rappel de sauvegarde,
   statistiques et série, mode écriture.
-- **Jalon 3 — les packs.** Script de génération, écran Packs, pack anglais puis
-  espagnol/italien/allemand puis chinois.
+- **Jalon 3 — les packs. ✅ livré** pour l'anglais et le japonais. Script de
+  génération, écran Packs, catalogue téléchargé à la demande.
 - **Jalon 4 — la recherche dictionnaire** intégrée au formulaire d'ajout.
+
+### Packs de vocabulaire
+
+Catalogue parcourable dans l'application, décrit par un `index.json` et **téléchargé
+à la demande** : rien ne pèse sur l'installation tant qu'aucun pack n'est installé.
+Chaque fiche annonce la langue vers laquelle elle traduit, car les decks ouverts
+glosent le plus souvent vers l'anglais.
+
+**Découpage par thème.** Aucun mot n'est classé à la main : les thèmes viennent des
+fichiers lexicographiques d'Open English WordNet, les traductions du dictionnaire
+FreeDict `eng-fra`, l'ordre des listes de fréquence OpenSubtitles. Un mot n'est
+retenu que s'il figure dans les trois.
+
+Deux filtres se sont révélés indispensables à l'usage : WordNet range un mot dans un
+thème dès qu'**un seul** de ses sens y appartient, ce qui faisait entrer « must »
+dans Nourriture (le moût de raisin) et « world » dans Animaux. On exige donc qu'au
+moins 60 % des sens du mot appartiennent au thème, et on écarte les mots de plus de
+six sens. Le décompte inclut les domaines adjectivaux, sans quoi « quick » ou
+« entire » passeraient pour des noms thématiques, leur unique sens nominal dominant
+alors à 100 %.
+
+Le rendement est limité par le dictionnaire : `eng-fra` ne compte que 8 782 entrées,
+d'où des thèmes de 20 à 150 mots plutôt que des milliers.
+
+**Parcourir AnkiWeb depuis l'application est impossible** : pas d'API publique, site
+rendu côté serveur, donc inatteignable depuis une page statique sans serveur
+intermédiaire. Seuls des dépôts servant leurs fichiers avec CORS — GitHub en
+pratique — peuvent alimenter le catalogue.
 
 ### Photo de l'appareil
 

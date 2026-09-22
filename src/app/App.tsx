@@ -9,11 +9,13 @@ import AddWordPage from '../pages/AddWordPage';
 import SettingsPage from '../pages/SettingsPage';
 import StatsPage from '../pages/StatsPage';
 import ImportPage from '../pages/ImportPage';
+import PacksPage from '../pages/PacksPage';
 
 const LINKS = [
   { to: '/', icon: '◎', label: 'Accueil' },
   { to: '/ajouter', icon: '＋', label: 'Ajouter' },
   { to: '/bibliotheque', icon: '☰', label: 'Biblio' },
+  { to: '/packs', icon: '◈', label: 'Packs' },
   { to: '/statistiques', icon: '◍', label: 'Stats' },
   { to: '/reglages', icon: '⚙', label: 'Réglages' },
 ];
@@ -54,6 +56,7 @@ function Shell() {
             <Route path="/ajouter" element={<AddWordPage />} />
             <Route path="/bibliotheque" element={<LibraryPage />} />
             <Route path="/statistiques" element={<StatsPage />} />
+            <Route path="/packs" element={<PacksPage />} />
             <Route path="/importer" element={<ImportPage />} />
             <Route path="/reglages" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />

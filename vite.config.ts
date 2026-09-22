@@ -40,7 +40,9 @@ export default defineConfig({
         // Le moteur SQLite ne sert qu'à l'import Anki : le pré-télécharger
         // triplerait le poids de l'installation pour une fonction utilisée une fois.
         // Il est mis en cache au premier usage, et reste donc disponible hors-ligne.
-        globIgnores: ['**/sql-wasm*.wasm'],
+        // Les packs ne sont téléchargés que si l'on en installe un : les pré-cacher
+        // ferait porter leur poids à tout le monde.
+        globIgnores: ['**/sql-wasm*.wasm', 'packs/**'],
         runtimeCaching: [
           {
             urlPattern: /sql-wasm.*\.wasm$/,

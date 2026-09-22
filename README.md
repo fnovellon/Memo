@@ -34,6 +34,20 @@ mégaoctets à quelques kilo-octets. Elle apparaît au verso de la carte, avec l
 de son auteur et sa licence — ou la simple mention « Photo personnelle ». L'orientation
 EXIF est respectée, pour qu'une photo prise en portrait ne soit pas stockée couchée.
 
+## Packs de vocabulaire
+
+L'onglet **Packs** liste des lots prêts à installer, téléchargés seulement quand on
+les installe. Les packs anglais sont générés par `npm run build:packs`, qui croise la
+classification thématique d'Open English WordNet, le dictionnaire anglais-français de
+FreeDict et les listes de fréquence OpenSubtitles — un mot n'est retenu que s'il
+figure dans les trois, et que la majorité de ses sens appartient au thème.
+
+Les decks japonais JLPT ne sont pas redistribués : l'application les télécharge depuis
+leur dépôt d'origine. Chaque fiche annonce vers quelle langue elle traduit, les decks
+ouverts glosant le plus souvent vers l'anglais.
+
+Les licences des sources sont récapitulées dans [`docs/ATTRIBUTIONS.md`](docs/ATTRIBUTIONS.md).
+
 ## Import depuis Anki
 
 Les réglages ouvrent un écran d'import qui accepte un paquet **`.apkg`** ou un export

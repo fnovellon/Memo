@@ -982,3 +982,59 @@ button.flashcard {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ---------- Packs ---------- */
+
+.pack-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+.pack {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.pack:last-child {
+  border-bottom: none;
+}
+
+.pack__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.pack__title {
+  font-weight: 600;
+}
+
+.pack__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.pack__report {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--known);
+}
+
+.pack .btn {
+  padding: 8px 14px;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.badge--warn {
+  background: var(--unknown-soft);
+  color: var(--unknown);
+}

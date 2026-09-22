@@ -70,6 +70,8 @@ export interface Settings {
   typingMode: boolean;
   /** Date du dernier export, qui déclenche le rappel de sauvegarde. */
   lastExportAt: number | null;
+  /** Packs déjà installés, pour les signaler dans le catalogue. */
+  installedPacks: string[];
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -79,6 +81,7 @@ export const DEFAULT_SETTINGS: Settings = {
   lastLang: 'en',
   typingMode: false,
   lastExportAt: null,
+  installedPacks: [],
 };
 
 /** Compteurs du jour, utilisés pour appliquer les quotas. Clé : `YYYY-MM-DD`. */
